@@ -31,7 +31,7 @@ public class HomeFragment extends Fragment {
     private List<Task> list;
     ISave iSave;
     private TaskAdapter.ViewHolder viewHolder;
-    private Task task;
+//    private Task task = new Task();
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -41,7 +41,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         list = new ArrayList<>();
-        list.add(task);
+
 
         adapter = new TaskAdapter(list);
         recyclerView.setAdapter(adapter);
@@ -55,17 +55,17 @@ public class HomeFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == 42 && resultCode == RESULT_OK && data!= null){
-            task = new Task(task.getTitle(), task.getDescription());
-            task = (Task) data.getSerializableExtra("key");
+
+           Task task = (Task) data.getSerializableExtra("key");
+            list.add(0,task);
+            adapter.notifyDataSetChanged();
         }
 
     }
 
-    public void pullTasks(String s) {
-        adapter.add(s);
-    }
+
 
 }
 

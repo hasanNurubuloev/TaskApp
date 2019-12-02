@@ -14,7 +14,6 @@ import com.geektech.taskapp.Task;
 
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
 
@@ -40,13 +39,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
     public int getItemCount() {
         return list.size();
     }
-    public void add (String s ) {
 
-    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
         private TextView textTitle;
         private  TextView textDescription;
+
+
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textTitle = itemView.findViewById(R.id.textTitle);
@@ -54,8 +57,8 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         }
 
         public void bind(Task task) {
+
                 textTitle.setText(task.getTitle());
-                Log.d("TAG", "bind: " + textTitle.getText());
                 textDescription.setText(task.getDescription());
         }
 

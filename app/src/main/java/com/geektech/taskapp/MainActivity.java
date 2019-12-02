@@ -12,6 +12,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleableRes;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -37,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        hf = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.homeFragment);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,17 +86,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 42 && resultCode ==RESULT_OK && data != null){
-           if (data!= null) {
+        Fragment fragment =getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        fragment.getChildFragmentManager().getFragments().get(0).onActivityResult(requestCode,resultCode,data);
 
 
-//                   task = new Task(task.getTitle(), task.getDescription());
-//                   task = (Task) data.getSerializableExtra("key");
-
-                   Log.d("TAG", "onActivityResult: " + task);
-
-           }
 //            hf.pullTasks(s);
         }
-    }
 }
