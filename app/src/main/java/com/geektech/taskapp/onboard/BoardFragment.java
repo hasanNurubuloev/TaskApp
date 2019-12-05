@@ -80,8 +80,8 @@ public class BoardFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences preferences = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
-                preferences.edit().putBoolean("isShown", true).apply();
+//                SharedPreferences preferences = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
+//                preferences.edit().putBoolean("isShown", true).apply();
                 startActivity(new Intent(getContext(), MainActivity.class));
                 getActivity().finish();
             }

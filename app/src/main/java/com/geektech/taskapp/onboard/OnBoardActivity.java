@@ -7,7 +7,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -40,6 +42,9 @@ Button skip;
 
     public void onClick(View view) {
        startActivity( new Intent(this, MainActivity.class));
+       finish();
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        preferences.edit().putBoolean("isShown", true).apply();
 
     }
 

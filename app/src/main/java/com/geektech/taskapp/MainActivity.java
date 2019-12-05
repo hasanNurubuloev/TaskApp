@@ -37,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
-        boolean isShown = preferences.getBoolean("isShown", false);
+//        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
+//        boolean isShown = preferences.getBoolean("isShown", false);
 
 
-   if (!isShown) {
-//        if (true){
+//   if (!isShown) {
+        if (true){
             startActivity(new Intent(this, OnBoardActivity.class));
             finish();
             return;
