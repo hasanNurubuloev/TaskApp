@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".onboard.OnBoardActivity">
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></androidx.viewpager.widget.ViewPager>
+
+<!--    <android.support.design.widget.TabLayout-->
+<!--        android:id="@+id/tab_layout"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:tabBackground="@drawable/tab_selector"-->
+<!--        app:tabGravity="center"-->
+<!--        app:tabIndicatorHeight="0dp"/>-->
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabIndicator="@drawable/bg_tab_indicator"
+        app:tabBackground="@drawable/bg_amber_dot"
+        app:tabIndicatorColor="@android:color/holo_blue_dark"
+        app:tabIndicatorGravity="center"
+        app:tabMaxWidth="12dp"
+        android:layout_alignParentBottom="true"
+        app:tabGravity="center"/>
+
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:text="SKIP"
+            android:onClick="onClick"
+            android:textSize="30sp"
+            android:textStyle="" />
+
+<!--        <fragment-->
+<!--            android:id="@+id/boardFragment"-->
+<!--            android:name="com.geektech.taskapp.onboard.BoardFragment"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            tools:layout="@layout/fragment_board" />-->
+
+</RelativeLayout>

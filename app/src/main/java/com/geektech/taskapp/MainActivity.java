@@ -1,17 +1,16 @@
 package com.geektech.taskapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import com.geektech.taskapp.onboard.OnBoardActivity;
 import com.geektech.taskapp.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StyleableRes;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -33,9 +32,22 @@ public class MainActivity extends AppCompatActivity {
     HomeFragment hf;
     Task task;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
+        boolean isShown = preferences.getBoolean("isShown", false);
+
+
+   if (!isShown) {
+//        if (true){
+            startActivity(new Intent(this, OnBoardActivity.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
 
@@ -63,10 +75,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
-
-
-
-
     }
 
     @Override
@@ -86,10 +94,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Fragment fragment =getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        fragment.getChildFragmentManager().getFragments().get(0).onActivityResult(requestCode,resultCode,data);
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+        fragment.getChildFragmentManager().getFragments().get(0).onActivityResult(requestCode, resultCode, data);
 
 
 //            hf.pullTasks(s);
-        }
+    }
 }
