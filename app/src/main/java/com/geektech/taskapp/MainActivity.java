@@ -1,5 +1,6 @@
 package com.geektech.taskapp;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import com.geektech.taskapp.onboard.OnBoardActivity;
 import com.geektech.taskapp.ui.home.HomeFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.os.Environment;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -26,6 +28,18 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
 
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
+
+import static android.os.Environment.getExternalStorageDirectory;
+
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -37,19 +51,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
-//        boolean isShown = preferences.getBoolean("isShown", false);
+        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
+        boolean isShown = preferences.getBoolean("isShown", false);
 
 
-//   if (!isShown) {
-        if (true){
+        if (!isShown) {
+//        if (true){
             startActivity(new Intent(this, OnBoardActivity.class));
             finish();
             return;
         }
 
         setContentView(R.layout.activity_main);
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-
+        initFile();
 
     }
 
@@ -97,7 +110,52 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
         fragment.getChildFragmentManager().getFragments().get(0).onActivityResult(requestCode, resultCode, data);
 
+    }
+@AfterPermissionGranted(101)
+    private void initFile(){
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            File folder = new File(getExternalCacheDir(), "TaskApp");
+            folder.mkdirs();
+            File file = new File(folder ,  "note.txt");
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File imageFile = new File(folder ,  "image.png");
+            downloadFile(imageFile);
 
-//            hf.pullTasks(s);
+
+
+
+        }else{
+            EasyPermissions.requestPermissions(this, "Разрешить?", 101 ,Manifest.permission.WRITE_EXTERNAL_STORAGE );
+        }
+
+
+    }
+
+    private  void  downloadFile (final File imageFile){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://square.github.io/picasso/static/sample.png");
+                    FileUtils.copyURLToFile(url,imageFile );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });thread.start();
+
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 }
