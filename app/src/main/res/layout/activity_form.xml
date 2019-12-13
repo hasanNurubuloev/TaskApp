@@ -12,6 +12,7 @@
         android:id="@+id/editTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/EditTextStile"
         android:onClick="onClick"
         android:hint="Введите текст" />
 
@@ -19,6 +20,7 @@
         android:id="@+id/editDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/EditTextStile"
         android:onClick="onClick"
         android:hint="Введите описание" />
 
@@ -26,8 +28,7 @@
         android:id="@+id/save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:background="@color/colorPrimary"
+        android:background="@drawable/bg_button"
         android:textColor="#fff"
         android:onClick="onClick"
         android:text="Save" />
