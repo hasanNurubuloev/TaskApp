@@ -40,7 +40,7 @@ import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.os.Environment.getExternalStorageDirectory;
 
-public class MainActivity extends AppCompatActivity {
+public class     MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     HomeFragment hf;
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_main);
+
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -104,14 +105,30 @@ public class MainActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
-        fragment.getChildFragmentManager().getFragments().get(0).onActivityResult(requestCode, resultCode, data);
+    private  void  downloadFile (final File imageFile){
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("https://square.github.io/picasso/static/sample.png");
+                    FileUtils.copyURLToFile(url,imageFile );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });thread.start();
 
     }
-@AfterPermissionGranted(101)
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Forward results to EasyPermissions
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+    //
+    @AfterPermissionGranted(101)
     private void initFile(){
         if (EasyPermissions.hasPermissions(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
             File folder = new File(getExternalCacheDir(), "TaskApp");
@@ -131,31 +148,19 @@ public class MainActivity extends AppCompatActivity {
         }else{
             EasyPermissions.requestPermissions(this, "Разрешить?", 101 ,Manifest.permission.WRITE_EXTERNAL_STORAGE );
         }
-
-
     }
-
-    private  void  downloadFile (final File imageFile){
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL("https://square.github.io/picasso/static/sample.png");
-                    FileUtils.copyURLToFile(url,imageFile );
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });thread.start();
-
-    }
-
+//    @Override
+//    public void sendInfo(Task task) {
+//        startActivityForResult(new Intent(this, FormActivity.class ), 101);
+//    }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode== 101 && resultCode == RESULT_OK&& data != null){
+            task = new Task();
+            task = (Task) data.getSerializableExtra("key");
 
-        // Forward results to EasyPermissions
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+        }
     }
 }
