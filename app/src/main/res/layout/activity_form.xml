@@ -14,7 +14,9 @@
         android:layout_height="wrap_content"
         style="@style/EditTextStile"
         android:onClick="onClick"
-        android:hint="Введите текст" />
+        android:hint="   Enter text"
+        android:drawableLeft="@drawable/ic_person_black_24dp"/>
+
 
     <EditText
         android:id="@+id/editDescription"
@@ -22,7 +24,9 @@
         android:layout_height="wrap_content"
         style="@style/EditTextStile"
         android:onClick="onClick"
-        android:hint="Введите описание" />
+        android:hint="   Enter description"
+        android:drawableLeft="@drawable/ic_lock_black_24dp"/>
+
 
     <Button
         android:id="@+id/save"
