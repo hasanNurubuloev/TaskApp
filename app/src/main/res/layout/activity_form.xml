@@ -14,8 +14,9 @@
         android:layout_height="wrap_content"
         style="@style/EditTextStile"
         android:onClick="onClick"
-        android:hint="   Enter text"
-        android:drawableLeft="@drawable/ic_person_black_24dp"/>
+        android:hint="Enter text"
+        android:drawablePadding="12dp"
+        android:drawableStart="@drawable/ic_person_black_24dp"/>
 
 
     <EditText
@@ -24,8 +25,9 @@
         android:layout_height="wrap_content"
         style="@style/EditTextStile"
         android:onClick="onClick"
-        android:hint="   Enter description"
-        android:drawableLeft="@drawable/ic_lock_black_24dp"/>
+        android:hint="Enter description"
+        android:drawablePadding="12dp"
+        android:drawableStart="@drawable/ic_lock_black_24dp"/>
 
 
     <Button

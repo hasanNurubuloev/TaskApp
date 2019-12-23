@@ -1,6 +1,5 @@
 package com.geektech.taskapp.ui.slideshow;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
@@ -11,21 +10,16 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.geektech.taskapp.R;
-import com.geektech.taskapp.Task;
-import com.geektech.taskapp.ui.home.TaskAdapter;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ImageViewAdapter extends RecyclerView.Adapter<ImageViewAdapter.ViewHolder> {
+public class ImageViewAdapter2 extends RecyclerView.Adapter<ImageViewAdapter2.ViewHolder> {
 
-    private List<String> list;
-    private Context context;
+    private List<File> list;
 
-    public ImageViewAdapter(List<String> list) {
+    public ImageViewAdapter2(List<File> list) {
         this.list = list;
     }
 
@@ -33,7 +27,6 @@ public class ImageViewAdapter extends RecyclerView.Adapter<ImageViewAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
        View view =  LayoutInflater.from(parent.getContext()).inflate(R.layout.image_view_holder, parent, false);
-       context = parent.getContext();
         return new ViewHolder(view);
     }
 
@@ -55,8 +48,9 @@ public class ImageViewAdapter extends RecyclerView.Adapter<ImageViewAdapter.View
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
         }
-        public void bind(String url) {
-            Glide.with(context).load(url).override(100, 100).into(imageView);
+        public void bind(File file) {
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            imageView.setImageBitmap(bitmap);
         }
     }
 }

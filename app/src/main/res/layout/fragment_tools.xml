@@ -9,8 +9,9 @@
         android:id="@+id/lav_toggle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scaleType="centerCrop"
         app:lottie_autoPlay="true"
         app:lottie_fileName="Gradge_bg.json"
-        app:lottie_loop="false"
+        app:lottie_loop="true"
         app:lottie_speed="1.75" />
 </LinearLayout>

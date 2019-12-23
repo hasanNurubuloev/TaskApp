@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
@@ -49,6 +50,7 @@ public class HomeFragment extends Fragment {
         final RecyclerView recyclerView = root.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
 
 
         list = new ArrayList<>();
@@ -114,10 +116,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-
-
-
-/*
+    /*
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
