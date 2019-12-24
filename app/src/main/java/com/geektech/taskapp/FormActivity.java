@@ -24,6 +24,8 @@ public class FormActivity extends AppCompatActivity {
     private EditText editDesc;
     HomeFragment homeFragment;
     Button save;
+    String userId;
+
     private Task task = new Task();
     Intent intent = new Intent();
 
@@ -36,6 +38,8 @@ public class FormActivity extends AppCompatActivity {
         editTitle = findViewById(R.id.editTitle);
         editDesc = findViewById(R.id.editDescription);
         save = findViewById(R.id.save);
+        userId = FirebaseAuth.getInstance().getUid();
+        getInfo();
         edit();
 
 
@@ -50,7 +54,23 @@ public class FormActivity extends AppCompatActivity {
 
         }
     }
-
+    private void getInfo() {
+        FirebaseFirestore.getInstance()
+                .collection("tasks")
+                .document()
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            String title = task.getResult().getString("title");
+                            String desc = task.getResult().getString("description");
+                            editTitle.setText(title);
+                            editDesc.setText(desc);
+                        }
+                    }
+                });
+    }
 
     public void onClick(View view) {
 
@@ -96,21 +116,5 @@ public class FormActivity extends AppCompatActivity {
 
 
 
-    private void getInfo() {
-        FirebaseFirestore.getInstance()
-                .collection("tasks")
-                .document()
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful() && task.getResult() != null) {
-                            String title = task.getResult().getString("title");
-                            String desc = task.getResult().getString("description");
-                            editTitle.setText(title);
-                            editDesc.setText(desc);
-                        }
-                    }
-                });
-    }
+
 }
