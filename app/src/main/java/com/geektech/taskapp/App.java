@@ -16,6 +16,7 @@ private static App instance;
         super.onCreate();
         instance = this;
         database = Room.databaseBuilder(this, AppDatabase.class, "database").allowMainThreadQueries().build();
+        new Prefs();
     }
 
     public static App getInstance(){

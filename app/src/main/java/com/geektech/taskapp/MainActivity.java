@@ -6,10 +6,13 @@ import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.bumptech.glide.Glide;
 import com.geektech.taskapp.onboard.OnBoardActivity;
 import com.geektech.taskapp.ui.home.HomeFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.os.Environment;
@@ -29,6 +32,12 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -38,6 +47,7 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,8 +61,9 @@ import java.net.URL;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-import static android.os.Environment.getExternalStorageDirectory;
-
+/*1. Показывать ПрогрессБар
+2. Сохранять url аватара для юзера
+3. Чтоб аватары не добавлялись, а менялись на Storage*/
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
@@ -62,16 +73,22 @@ public class MainActivity extends AppCompatActivity {
     private TextView editTextEmail;
     private String name;
     private String email;
+    private String userId;
+    private ImageView imageViewHader;
+    View header;
     Button signOut;
+
     @SuppressLint("WrongViewCast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SharedPreferences preferences = getSharedPreferences("settings", MODE_PRIVATE);
-        boolean isShown = preferences.getBoolean("isShown", false);
-        name = preferences.getString("name","No name");
-        email = preferences.getString("email","No name");
-        Log.e("ololo", "onCreate: name email " + name + email );
+        boolean isShown = Prefs.getInstance().getIsShown();
+        name = Prefs.getInstance().getPreferences()
+                .getString("name", "No name");
+        email = Prefs.getInstance().getPreferences()
+                .getString("email", "No name");
+        userId = FirebaseAuth.getInstance().getUid();
+        Log.e("ololo", "onCreate: name email " + name + email);
 
 
         if (!isShown) {
@@ -79,15 +96,15 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) { //
-            startActivity(new Intent(this, PhoneActivity.class));
-            finish();
-            return;
-        }
+//        if (FirebaseAuth.getInstance().getCurrentUser() == null) { //
+//            startActivity(new Intent(this, PhoneActivity.class));
+//            finish();
+//            return;
+//        }
 
         setContentView(R.layout.activity_main);
 
-
+        info();
         signOut = findViewById(R.id.sign_out);
 
 
@@ -105,21 +122,24 @@ public class MainActivity extends AppCompatActivity {
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
-        View header = navigationView.getHeaderView(0);
+        header = navigationView.getHeaderView(0);
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, ProfileActivity.class));
             }
         });
-        editTextName = header.findViewById(R.id.text_name_header);
-        editTextEmail = header.findViewById(R.id.text_email_header);
-
-        Log.d("ololo", "onClick:  name email" + name + email);
-        editTextEmail.setText(email);
-        editTextName.setText(name);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+
+        imageViewHader = header.findViewById(R.id.imageView);
+        StorageReference storage = FirebaseStorage.getInstance().getReference();
+        storage.child("avatars/" + userId).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                Glide.with(MainActivity.this).load(uri).circleCrop().into(imageViewHader);
+            }
+        });
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send)
@@ -129,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
         initFile();
-
 
 
     }
@@ -162,6 +181,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         thread.start();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        editTextName = header.findViewById(R.id.text_name_header);
+        editTextEmail = header.findViewById(R.id.text_email_header);
+
+        editTextEmail.setText(email);
+        editTextName.setText(name);
 
     }
 
@@ -207,25 +237,24 @@ public class MainActivity extends AppCompatActivity {
                 ((HomeFragment) fragment.getChildFragmentManager().getFragments().get(0)).sortList();
                 return true;
             case R.id.sign_out:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setTitle("Выйти из аккаунта?")
-                            .setMessage("Вы уверены?")
-                            .setPositiveButton("Да", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    FirebaseAuth.getInstance().signOut();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Выйти из аккаунта?")
+                        .setMessage("Вы уверены?")
+                        .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                FirebaseAuth.getInstance().signOut();
 
-                                }
-                            });
-                    builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Toaster.show("Удаление отменено");
-                        }
-                    });
-                    AlertDialog alert = builder.create();
-                    alert.show();
-
+                            }
+                        });
+                builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toaster.show("Удаление отменено");
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
 
 
                 break;
@@ -245,6 +274,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void info() {
+        FirebaseFirestore.getInstance().collection("users").document(userId)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                        if (documentSnapshot != null) {
+                            String name = documentSnapshot.getString("name");
+                            String email = documentSnapshot.getString("email");
+                            String image = documentSnapshot.getString("avatar");
+                            Glide.with(MainActivity.this).load(image).circleCrop().into(imageViewHader);
+                            imageViewHader.setImageURI(Uri.parse(image));
+                            editTextName.setText(name);
+                            editTextEmail.setText(email);
+                        }
+                    }
+                });
+    }
 
 }
 

@@ -13,6 +13,7 @@ import com.geektech.taskapp.room.TaskDao;
 import com.geektech.taskapp.ui.home.HomeFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -26,7 +27,7 @@ public class FormActivity extends AppCompatActivity {
     Button save;
     String userId;
 
-    private Task task = new Task();
+    private Task mTask = new Task();
     Intent intent = new Intent();
 
     TaskDao taskDao;
@@ -38,7 +39,7 @@ public class FormActivity extends AppCompatActivity {
         editTitle = findViewById(R.id.editTitle);
         editDesc = findViewById(R.id.editDescription);
         save = findViewById(R.id.save);
-        userId = FirebaseAuth.getInstance().getUid();
+//        userId = FirebaseAuth.getInstance().getUid();
         getInfo();
         edit();
 
@@ -47,13 +48,14 @@ public class FormActivity extends AppCompatActivity {
 
     public void edit() {
 
-        task = (Task) getIntent().getSerializableExtra("Task");
-        if (task != null) {
-            editTitle.setText(task.getTitle());
-            editDesc.setText(task.getDescription());
+        mTask = (Task) getIntent().getSerializableExtra("Task");
+        if (mTask != null) {
+            editTitle.setText(mTask.getTitle());
+            editDesc.setText(mTask.getDescription());
 
         }
     }
+
     private void getInfo() {
         FirebaseFirestore.getInstance()
                 .collection("tasks")
@@ -77,44 +79,48 @@ public class FormActivity extends AppCompatActivity {
         String title = editTitle.getText().toString().trim();
         String description = editDesc.getText().toString().trim();
 
-        if (task != null) {
-            task.setTitle(title);
-            task.setDescription(description);
-            App.getDatabase().taskDao().update(task);
-
+        if (mTask != null) {
+            mTask.setTitle(title);
+            mTask.setDescription(description);
+            updateTask();
         } else {
-            task = new Task(title, description);
-
-            App.getDatabase().taskDao().insert(task);
+            mTask = new Task(title, description);
+            addToFireStore();
         }
 
 
-        String title1 = editTitle.getText().toString();
-        String desc = editDesc.getText().toString();
-        Map<String, Object> map = new HashMap<>();
-        map.put("title", title1);
-        map.put("description", desc);
-        String userId = FirebaseAuth.getInstance().getUid();
-        FirebaseFirestore.getInstance().collection("tasks")
-                .document(userId)
-                .set(map)
+    }
+
+    private void updateTask() {
+        FirebaseFirestore.getInstance()
+                .collection("tasks")
+                .document(mTask.getId())
+                .set(mTask)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toaster.show("Успешно");
-
-                        } else {
-                            Toaster.show("Ошибка");
-
+                            App.getDatabase().taskDao().update(mTask);
+                            finish();
                         }
                     }
                 });
-
-        finish();
     }
 
-
+    private void addToFireStore() {
+        FirebaseFirestore.getInstance().collection("tasks")
+                .add(mTask)
+                .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentReference> task) {
+                        if (task.isSuccessful()) {
+                            mTask.setId(task.getResult().getId());
+                            App.getDatabase().taskDao().insert(mTask);
+                            finish();
+                        }
+                    }
+                });
+    }
 
 
 }

@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.geektech.taskapp.MainActivity;
+import com.geektech.taskapp.Prefs;
 import com.geektech.taskapp.R;
 import com.google.android.material.tabs.TabLayout;
 
@@ -35,8 +36,6 @@ import static android.content.Context.MODE_PRIVATE;
  */
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class BoardFragment extends Fragment {
-//TabLayout tabLayout;
-//ViewPager viewPager;
 
     public BoardFragment() {
         // Required empty public constructor
@@ -80,8 +79,7 @@ public class BoardFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences preferences = getActivity().getSharedPreferences("settings", MODE_PRIVATE);
-                preferences.edit().putBoolean("isShown", true).apply();
+                Prefs.getInstance().getPreferences().edit().putBoolean("isShown", true).apply();
                 startActivity(new Intent(getContext(), MainActivity.class));
                 getActivity().finish();
             }

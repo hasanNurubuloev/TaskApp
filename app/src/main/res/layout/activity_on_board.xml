@@ -10,7 +10,7 @@
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></androidx.viewpager.widget.ViewPager>
+        android:layout_height="match_parent" />
 
 
     <com.google.android.material.tabs.TabLayout
@@ -37,12 +37,5 @@
             android:onClick="onClick"
             android:textSize="30sp"
             android:textStyle="" />
-
-<!--        <fragment-->
-<!--            android:id="@+id/boardFragment"-->
-<!--            android:name="com.geektech.taskapp.onboard.BoardFragment"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            tools:layout="@layout/fragment_board" />-->
 
 </RelativeLayout>

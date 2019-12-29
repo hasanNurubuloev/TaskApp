@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
@@ -21,17 +22,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static android.widget.Toast.LENGTH_SHORT;
-
-
-//        1. view smsCode
-//        2. Добавить в меню в MainActivity кнопку sign out (AlertDialog)
-
-//        3. Лист с картинками доделать
 
 public class PhoneActivity extends AppCompatActivity {
     private EditText editText, editCode;
@@ -65,7 +62,6 @@ public class PhoneActivity extends AppCompatActivity {
             public void onClick(View v) {
 
 
-
                 String cod = editCode.getText().toString();
                 if (cod.isEmpty()) {
                     editCode.setError("СМС код не введен");
@@ -74,8 +70,6 @@ public class PhoneActivity extends AppCompatActivity {
                 }
                 PhoneAuthCredential phoneCredential = PhoneAuthProvider.getCredential(verificationId, cod);
                 signIn(phoneCredential);
-
-
 
 
             }
@@ -88,7 +82,6 @@ public class PhoneActivity extends AppCompatActivity {
                 Log.e("TAG", "onVerificationCompleted: ");
 
                 if (a) {
-//                    verifyCode(code);
                 } else {
                     signIn(phoneAuthCredential);
                 }
@@ -120,9 +113,8 @@ public class PhoneActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    startActivity(new Intent(PhoneActivity.this, MainActivity.class));
-                    finish();
 
+                    getInfo();
                 } else {
                     Toast.makeText(PhoneActivity.this, "Код введен не правильно", LENGTH_SHORT).show();
                 }
@@ -140,6 +132,25 @@ public class PhoneActivity extends AppCompatActivity {
         linearCode.setVisibility(View.VISIBLE);
     }
 
+    public void getInfo() {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document()
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            String name = task.getResult().getString("name");
+                            String email = task.getResult().getString("email");
+                            Prefs.getInstance().saveUserInfo(name, email);
+                            startActivity(new Intent(PhoneActivity.this, MainActivity.class));
+                            finish();
+                        }
+                    }
+
+    });
+}
 
 
 
